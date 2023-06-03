@@ -4,6 +4,7 @@ export default class GameSaving {
     this.id = data.id;
     this.level = data.level;
     this.score = data.score;
+    this.points = data.points;
   }
 
   get id() {
@@ -28,5 +29,12 @@ export default class GameSaving {
 
   set score(value) {
     this._score = value;
+  }
+  get points() {
+    return this._points;
+  }
+
+  set points(value) {
+    this._points = value;
   }
 }

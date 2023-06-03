@@ -1,17 +1,35 @@
 import GameSavingLoader from "../GameSavingLoader";
 
-test("GameSavingLoader.load() should load and parse the GameSaving file", async () => {
-  const saving = await GameSavingLoader.load();
+describe("GameSavingLoader class", () => {
+  test("should return a valid GameSaving object", async () => {
+    const expectedSaving = {
+      id: 9,
+      created: new Date(1546300800),
+      userInfo: {
+        id: 1,
+        name: "Hitman",
+        level: 10,
+        points: 2000,
+      },
+    };
 
-  expect(saving.id).toBe(9);
-  expect(typeof saving.created).toBe("string"); // проверяем, что поле created это строка
-  expect(saving.userInfo).toMatchObject({
-    id: 1,
-    name: "Hitman",
-    level: 10,
-    points: 2000,
+    const saving = await GameSavingLoader.load();
+    expect(saving).toEqual(expectedSaving);
   });
 
-  const date = new Date(saving.created); // преобразуем строку created в экземпляр Date
-  expect(date).toBeInstanceOf(Date); // проверяем, что date это экземпляр Date
+  test("should throw an error when encountering an invalid file", async () => {
+    const expectedError = new Error("Error while parsing the GameSaving file");
+
+    const mockRead = jest.fn(() => Promise.reject());
+    const mockJson = jest.fn(() => Promise.reject());
+
+    jest.mock("../reader", () => ({ default: mockRead }));
+    jest.mock("../parser", () => ({ default: mockJson }));
+
+    try {
+      await GameSavingLoader.load();
+    } catch (error) {
+      expect(error).toEqual(expectedError);
+    }
+  });
 });
